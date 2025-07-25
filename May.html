@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+  <title>Cric Central</title>
+  <link rel="shortcut icon" href="https://upload.wikimedia.org/wikipedia/commons/thumb/8/82/Telegram_logo.svg/2048px-Telegram_logo.svg.png" />
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-color: #000;
+      --text-color: #fff;
+      --card-bg: #1a1a1a;
+      --border-color: rgba(255, 255, 255, 0.1);
+      --live-color: yellow;
+      --upcoming-color: #FF5733;
+      --highlight-color: #FFD700;
+      --btn-watch: #28a745;
+      --btn-watch-hover: #218838;
+    }
+
+    html[data-theme='light'] {
+      --bg-color: #f8f9fa;
+      --text-color: #212529;
+      --card-bg: #ffffff;
+      --border-color: #dee2e6;
+      --live-color: #d63384;
+      --upcoming-color: #0d6efd;
+      --highlight-color: #d63384;
+      --btn-watch: #0d6efd;
+      --btn-watch-hover: #0a58ca;
+    }
+
+    body {
+      font-family: 'Roboto', sans-serif;
+      margin: 0;
+      padding: 20px;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      position: relative;
+    }
+
+    h1 {
+      text-align: center;
+      color: var(--highlight-color);
+      margin-bottom: 20px;
+      font-family: 'Montserrat', sans-serif;
+    }
+
+    .telegram-toggle {
+      background-color: #EE4B2B;
+      color: white;
+      padding: 10px 15px;
+      border-radius: 50px;
+      text-decoration: none;
+      font-weight: bold;
+      display: block;
+      margin: 20px auto 10px;
+      text-align: center;
+      width: fit-content;
+    }
+
+    .theme-toggle {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      padding: 8px 14px;
+      background-color: #6c757d;
+      color: #fff;
+      border-radius: 25px;
+      border: none;
+      font-size: 18px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      z-index: 999;
+    }
+
+    .theme-toggle:hover {
+      background-color: #5a6268;
+    }
+
+    .file-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      justify-content: center;
+    }
+
+    .match-item {
+      text-align: center;
+      background-color: var(--card-bg);
+      padding: 12px;
+      border-radius: 8px;
+      width: calc(25% - 20px);
+      box-sizing: border-box;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      border: 1px solid var(--border-color);
+    }
+
+    .match-item:hover {
+      transform: scale(1.05);
+      box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .match-item img {
+      width: 100%;
+      aspect-ratio: 16 / 9.5;
+      object-fit: cover;
+      object-position: center top;
+      border-top-left-radius: 8px;
+      border-top-right-radius: 8px;
+      margin-bottom: 10px;
+    }
+
+    .status-live {
+      color: var(--live-color);
+      font-weight: bold;
+      text-shadow: 0px 0px 8px rgba(255, 255, 0, 0.8);
+      animation: liveGlow 1.5s infinite alternate;
+    }
+
+    @keyframes liveGlow {
+      0% { text-shadow: 0px 0px 8px rgba(255, 255, 0, 0.8); }
+      100% { text-shadow: 0px 0px 16px rgba(255, 255, 0, 1); }
+    }
+
+    .status-upcoming {
+      color: var(--upcoming-color);
+    }
+
+    .watch-button {
+      padding: 10px 15px;
+      margin-top: 8px;
+      border: none;
+      border-radius: 5px;
+      font-weight: bold;
+      cursor: pointer;
+      color: white;
+      background-color: var(--btn-watch);
+    }
+
+    .watch-button:hover {
+      background-color: var(--btn-watch-hover);
+    }
+
+    @media (max-width: 768px) {
+      .match-item {
+        width: calc(50% - 20px);
+      }
+    }
+
+    @media (max-width: 480px) {
+      .match-item {
+        width: calc(100% - 20px);
+      }
+    }
+  </style>
+</head>
+<body>
+  <button class="theme-toggle" id="themeToggleBtn" onclick="toggleTheme()">☀️</button>
+  <h1>𝙲ʀɪᴄ 𝙲ᴇɴᴛʀᴀʟ</h1>
+  <a href="https://t.me/+-rDNhsdrZr1mNmU9" class="telegram-toggle">Join Telegram</a>
+  <div class="file-container" id="matches"></div>
+
+<script>
+  if (confirm("Join our Telegram Channel @CricCentral")) {
+    window.location.href = "https://t.me/+-rDNhsdrZr1mNmU9";
+  }
+
+  function show404Page() {
+    document.documentElement.innerHTML = `
+      <div style="display:flex;align-items:center;justify-content:center;height:100vh;text-align:center;">
+        <div><h1>404</h1><p>Page not found or blocked</p></div>
+      </div>`;
+  }
+
+  if (window !== window.top) show404Page();
+
+  document.addEventListener('contextmenu', e => e.preventDefault());
+  document.onkeydown = function(e) {
+    if (e.key === "F12" || (e.ctrlKey && e.shiftKey && ["I", "J", "C"].includes(e.key)) || (e.ctrlKey && e.key === "U")) {
+      e.preventDefault(); show404Page(); return false;
+    }
+  };
+
+  setInterval(() => {
+    if (window.outerWidth - window.innerWidth > 160 || window.outerHeight - window.innerHeight > 160) show404Page();
+  }, 1000);
+
+  function toggleTheme() {
+    const root = document.documentElement;
+    const current = root.getAttribute("data-theme") || "dark";
+    const next = current === "dark" ? "light" : "dark";
+    root.setAttribute("data-theme", next);
+    localStorage.setItem("theme", next);
+    document.getElementById("themeToggleBtn").textContent = next === "dark" ? "☀️" : "🌙";
+  }
+
+  const savedTheme = localStorage.getItem("theme");
+  if (savedTheme) {
+    document.documentElement.setAttribute("data-theme", savedTheme);
+    document.getElementById("themeToggleBtn").textContent = savedTheme === "dark" ? "☀️" : "🌙";
+  }
+
+  // Extract keyword from URL (supporting both ?key=value and ?value)
+  function getKeyword() {
+    const query = window.location.search.slice(1).trim();
+    if (!query) return "";
+    if (query.includes("=")) {
+      return decodeURIComponent(query.split("=")[1] || "").toLowerCase();
+    }
+    return decodeURIComponent(query).toLowerCase();
+  }
+
+  const keyword = getKeyword();
+
+  if (keyword) {
+    fetch("https://raw.githubusercontent.com/drmlive/fancode-live-events/main/fancode.json")
+      .then(res => res.json())
+      .then(data => {
+        const container = document.getElementById("matches");
+        const now = new Date();
+
+        data.matches.filter(match => {
+          const title = `${match.team_1} vs ${match.team_2}`.toLowerCase();
+          const inTime = (() => {
+            try {
+              const [time, period, date] = match.startTime.split(" ");
+              const [hh, mm] = time.split(":"), [dd, MM, yyyy] = date.split("-");
+              let hour = parseInt(hh);
+              if (period === "PM" && hour !== 12) hour += 12;
+              if (period === "AM" && hour === 12) hour = 0;
+              const matchTime = new Date(yyyy, MM - 1, dd, hour, mm);
+              const diff = (matchTime - now) / 60000;
+              return diff <= 35 && diff > -180;
+            } catch { return false; }
+          })();
+          return (title.includes(keyword) || (match.title || "").toLowerCase().includes(keyword)) &&
+                 (match.status.toLowerCase() === "live" || inTime);
+        }).forEach(match => {
+          const card = document.createElement("div");
+          card.className = "match-item";
+          const statusClass = match.status.toLowerCase() === "live" ? "status-live" : "status-upcoming";
+          const [time, period, date] = match.startTime.split(" ");
+          const timeDisplay = `${date}, ${time} ${period}`;
+          const streamUrl = match.adfree_url && match.adfree_url.trim() !== "" ? match.adfree_url : match.dai_url;
+
+          card.innerHTML = `
+            <img src="${match.src}" alt="${match.match_name}">
+            <h3>${match.team_1} vs ${match.team_2}</h3>
+            <p>${match.event_name}</p>
+            <p class="${statusClass}">${match.status}</p>
+            ${match.status.toLowerCase() !== "live" ? `<p>${timeDisplay}</p>` : ""}
+            ${streamUrl ? `<button class="watch-button" onclick="window.location.href='https://criccentral.rf.gd?id=${encodeURIComponent(streamUrl)}'">🎥 Watch Now</button>` : ""}
+          `;
+          container.appendChild(card);
+        });
+      })
+      .catch(err => {
+        console.error("Error loading matches:", err);
+        document.getElementById("matches").innerHTML = "<p style='text-align:center;'>Unable to load matches. Please try again later.</p>";
+      });
+  }
+</script>
