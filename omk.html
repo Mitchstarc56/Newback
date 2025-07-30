@@ -266,7 +266,7 @@
                 return diff <= 35 && diff > -180;
               } catch { return false; }
             })();
-            return (match.title || '').toLowerCase().includes(keyword) && (match.status.toLowerCase() === "live" || inTime);
+            return (match.name || '').toLowerCase().includes(keyword) && (match.status.toLowerCase() === "live" || inTime);
           }).forEach(match => {
             const card = document.createElement("div");
             card.className = "match-item";
