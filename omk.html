@@ -276,12 +276,12 @@
             const streamUrl = match.adfree_url && match.adfree_url.trim() !== "" ? match.adfree_url : match.dai_url;
 
             card.innerHTML = `
-              <img src="${match.src}" alt="${match.title}">
-              <h3>${match.event_name}</h3>
-              <p>${match.team_1} vs ${match.team_2}</p>
-              <p class="${statusClass}">${match.status}</p>
-              ${match.status.toLowerCase() !== "live" ? `<p>${timeDisplay}</p>` : ""}
-              ${streamUrl ? `<button class="watch-button" onclick="window.location.href='https://criccentral.rf.gd?id=${encodeURIComponent(streamUrl)}'"><i class="fas fa-play"></i> Watch</button>` : ""}
+            <img src="${match.src}" alt="${match.match_name}">
+            <h3>${match.team_1} vs ${match.team_2}</h3>
+            <p>${match.event_name}</p>
+            <p class="${statusClass}">${match.status}</p>
+            ${match.status.toLowerCase() !== "live" ? `<p>${timeDisplay}</p>` : ""}
+            ${streamUrl ? `<button class="watch-button" onclick="window.location.href='https://criccentral.rf.gd?id=${encodeURIComponent(streamUrl)}'"><i class="fas fa-play"></i> Watch</button>` : ""}
             `;
             container.appendChild(card);
           });
@@ -290,3 +290,4 @@
   </script>
 </body>
 </html>
+
