@@ -6,9 +6,8 @@
   <title>Cric Central</title>
   <link rel="shortcut icon" href="https://upload.wikimedia.org/wikipedia/commons/thumb/8/82/Telegram_logo.svg/2048px-Telegram_logo.svg.png" />
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
-  
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
   <style>
     :root {
       --bg-color: #000;
@@ -205,7 +204,7 @@
     document.getElementById("themeToggleBtn").textContent = savedTheme === "dark" ? "☀️" : "🌙";
   }
 
-  // Extract keyword from URL (supporting both ?key=value and ?value)
+  // Extract keyword from URL
   function getKeyword() {
     const query = window.location.search.slice(1).trim();
     if (!query) return "";
@@ -226,6 +225,9 @@
 
         data.matches.filter(match => {
           const title = `${match.team_1} vs ${match.team_2}`.toLowerCase();
+          const matchTitle = (match.title || "").toLowerCase();
+          const words = (match.match_name + " " + matchTitle).toLowerCase().split(/\s+/);
+
           const inTime = (() => {
             try {
               const [time, period, date] = match.startTime.split(" ");
@@ -238,7 +240,8 @@
               return diff <= 35 && diff > -180;
             } catch { return false; }
           })();
-          return (title.includes(keyword) || (match.title || "").toLowerCase().includes(keyword)) &&
+
+          return (words.includes(keyword)) &&
                  (match.status.toLowerCase() === "live" || inTime);
         }).forEach(match => {
           const card = document.createElement("div");
@@ -261,7 +264,8 @@
       })
       .catch(err => {
         console.error("Error loading matches:", err);
-        document.getElementById("matches").innerHTML = "<p style='text-align:center;'>Unable to load matches. Please try again later.</p>";
       });
   }
 </script>
+</body>
+</html>
