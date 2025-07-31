@@ -214,7 +214,15 @@
     return decodeURIComponent(query).toLowerCase();
   }
 
-  const keyword = getKeyword();
+  // Remove punctuation & split into clean words
+  function normalizeText(text) {
+    return text
+      .toLowerCase()
+      .replace(/[.,/#!$%^&*;:{}=\-_`~()]/g, "") // remove punctuation
+      .split(/\s+/);
+  }
+
+  const keyword = getKeyword().replace(/[.,/#!$%^&*;:{}=\-_`~()]/g, "");
 
   if (keyword) {
     fetch("https://raw.githubusercontent.com/drmlive/fancode-live-events/main/fancode.json")
@@ -224,10 +232,7 @@
         const now = new Date();
 
         data.matches.filter(match => {
-          const title = `${match.team_1} vs ${match.team_2}`.toLowerCase();
-          const matchTitle = (match.title || "").toLowerCase();
-          const words = (match.match_name + " " + matchTitle).toLowerCase().split(/\s+/);
-
+          const words = normalizeText(match.match_name + " " + (match.title || ""));
           const inTime = (() => {
             try {
               const [time, period, date] = match.startTime.split(" ");
@@ -257,7 +262,7 @@
             <p>${match.event_name}</p>
             <p class="${statusClass}">${match.status}</p>
             ${match.status.toLowerCase() !== "live" ? `<p>${timeDisplay}</p>` : ""}
-            ${streamUrl ? `<button class="watch-button" onclick="window.location.href='https://criccentral.rf.gd?id=${encodeURIComponent(streamUrl)}'"><i class="fas fa-play"></i> Watch</button>` : ""}
+            ${streamUrl ? `<button class="watch-button" onclick="window.location.href='https://criccentral.rf.gd?id=${encodeURIComponent(streamUrl)}'"><i class="fas fa-play"></i>  WATCH</button>` : ""}
           `;
           container.appendChild(card);
         });
