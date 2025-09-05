@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sports Player</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.6.0/shaka-player.ui.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.6.0/controls.min.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons+Sharp">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body {
+      background: #000;
+      height: 100vh;
+      width: 100vw;
+      overflow: hidden;
+      font-family: system-ui, -apple-system, sans-serif;
+    }
+    .shaka-video-container {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+    }
+    video {
+      width: 100%;
+      height: 100%;
+      background: #000;
+      object-fit: contain;
+    }
+    .shaka-spinner-container,
+    .shaka-spinner,
+    .shaka-spinner-svg {
+      display: none !important;
+      visibility: hidden !important;
+      opacity: 0 !important;
+    }
+  </style>
+</head>
+<body>
+
+<div class="shaka-video-container youtube-theme" data-shaka-player>
+  <video autoplay muted playsinline preload="metadata"></video>
+</div>
+
+<script>
+const channels = [
+  { channel: "ss1",   mpd: "https://jiotvmblive.cdn.jio.com/bpk-tv/Star_Sports_1_BTS/output/index.mpd", clearkey: "df20894ec30954d3b28097c138f4cfda:ff9b6292b1cddbd11a046029cb314634" },
+  { channel: "ss2",   mpd: "https://jiotvmblive.cdn.jio.com/bpk-tv/Star_Sports_2_BTS/output/index.mpd", clearkey: "fc3aafe80845584199a637249fad2ffa:ca4474972fdb4bf8ecb164482853c692" },
+  { channel: "ss1h",  mpd: "https://jiotvmblive.cdn.jio.com/bpk-tv/Star_Sports_HD1_Hindi_BTS/output/index.mpd", clearkey: "609ace1518f15ee2bcee407f5e435fed:533464a6d57d3e40b61b8fa8c4fe6627" },
+  { channel: "sss1s", mpd: "https://jiotvmblive.cdn.jio.com/bpk-tv/Star_Sports_Select_1_BTS/output/index.mpd", clearkey: "ea7985dacbb95f1c9d62e5a1675142e5:39d5910ca04841b5f32bf24623cdae58" },
+  { channel: "sss1",  mpd: "https://jiotvmblive.cdn.jio.com/bpk-tv/Star_Sports_Select_1_HD_BTS/output/index.mpd", clearkey: "c2c048e439d65316beeda6ef64d5d0f8:e2fdc132cbdee65501b845ce414fce39" },
+  { channel: "sss2s", mpd: "https://jiotvmblive.cdn.jio.com/bpk-tv/Star_Sports_Select_2_BTS/output/index.mpd", clearkey: "ec7d009d07aa5cbc81a441880530dfa5:8147983ad7402ebfc222d28b667a196f" },
+  { channel: "sss2",  mpd: "https://jiotvmblive.cdn.jio.com/bpk-tv/Star_Sports_Select_HD_2_BTS/output/index.mpd", clearkey: "6017d0514d425fa38f6e80ba6dcc852f:0018944b00adf2078f62386f30c68b74" },
+  { channel: "ss1t",  mpd: "https://jiotvmblive.cdn.jio.com/bpk-tv/Star_Sports_1_Tamil_BTS/output/index.mpd", clearkey: "d0d750ebd52b5756aa7fb833f61ceece:4ae62a20c030c918aad24193c1dda229" },
+  { channel: "t2",    mpd: "https://jiotvmblive.cdn.jio.com/bpk-tv/Ten_2_MOB/WDVLive/index.mpd", clearkey: "671ce7c8ccc95e0a95cba0d12831d12e:175d284c9647b6feb379e7c1650a4f82" },
+  { channel: "ss2h",  mpd: "https://jiotvmblive.cdn.jio.com/bpk-tv/Sports18_1_HD_BTS/output/index.mpd", clearkey: "b9d4acedc66c5660a1e06197a55bccd2:dd53bab1a42f41ae8f0a5c8fd286f456" },
+  { channel: "ss2hs", mpd: "https://jiotvmblive.cdn.jio.com/bpk-tv/Sports18_1_SD_BTS/output/index.mpd", clearkey: "a3ed8dc0e0cb5d238da80ee0a85bd2e1:67a96992e6406606f3480ab58d7f540c" },
+  { channel: "ssk",   mpd: "https://jiotvmblive.cdn.jio.com/bpk-tv/Sports18_Khel_BTS/output/index.mpd", clearkey: "ab947ddbb9795d38bff35597b4f73108:2671e22eb7dc174c35b6aad4b113f7b0" },
+  { channel: "st1",   mpd: "https://jiotvmblive.cdn.jio.com/bpk-tv/Ten_HD_BTS/output/index.mpd", clearkey: "523acf1f55485476817958a62a3f2ed9:52b3cea435ed25d445f9eae4883c7001" },
+  { channel: "st2",   mpd: "https://jiotvmblive.cdn.jio.com/bpk-tv/Ten2_HD_BTS/output/index.mpd", clearkey: "7771cca923225ce08887cbae764e72c6:67d80b71f02d2cd1e4e0ee7b9b752841" },
+  { channel: "st3h",  mpd: "https://jiotvmblive.cdn.jio.com/bpk-tv/Ten3_HD_BTS/output/index.mpd", clearkey: "71719eea0bbb5319a4e854ac52ea7871:752ed8f45c43ed858af4c1716c05241a" },
+  { channel: "st4ta", mpd: "https://jiotvmblive.cdn.jio.com/bpk-tv/Ten_4_HD_Tamil_BTS/output/index.mpd", clearkey: "1dc6cf8863e958f5a8486c944f0bb04f:0d74e2d5ac746450ed827e3f828ee1e4" },
+  { channel: "st4te", mpd: "https://jiotvmblive.cdn.jio.com/bpk-tv/Ten_4_HD_Telugu_BTS/output/index.mpd", clearkey: "5c99be9d8ed654bf90cab4538ece3a5e:ddafcea98ffa2a1840607ab60c467846" },
+  { channel: "st5",   mpd: "https://jiotvmblive.cdn.jio.com/bpk-tv/Six_HD_BTS/output/index.mpd", clearkey: "233d5f64b5b1547dae38f5a8b0b85efa:3b000618435f702db7d9910d8265584a" }
+];
+
+document.addEventListener('DOMContentLoaded', async () => {
+  shaka.polyfill.installAll();
+  if (!shaka.Player.isBrowserSupported()) {
+    console.error('Browser not supported');
+    return;
+  }
+
+  const params = new URLSearchParams(window.location.search);
+  const channelKey = params.get('channel') || 'ss1'; // default channel
+  const selected = channels.find(c => c.channel === channelKey);
+
+  if (!selected) {
+    console.error("Invalid channel parameter");
+    return;
+  }
+
+  const [keyId, key] = selected.clearkey.split(":");
+  const video = document.querySelector('video');
+  const player = new shaka.Player(video);
+
+  const container = document.querySelector('.shaka-video-container');
+  new shaka.ui.Overlay(player, container, video);
+
+  player.configure({
+    drm: { clearKeys: { [keyId]: key } },
+    streaming: { bufferingGoal: 30, rebufferingGoal: 5, bufferBehind: 30 },
+  });
+
+  player.getNetworkingEngine().registerRequestFilter((type, request) => {
+    request.headers['Referer'] = 'https://www.jiotv.com/';
+    request.headers['User-Agent'] = "plaYtv/7.1.3(Linux;Android13)ygx/69.1ExoPlayerLib/824.0";
+    request.headers['Cookie'] = "__hdnea__=st=1757037076~exp=1757123476~acl=/*~hmac=e9bae81a27bc8bc3f2ef2f3f261e0714c06289c6e9c6681d03c1529acc6aa90d";
+  });
+
+  try {
+    await player.load(selected.mpd);
+    await video.play().catch(() => {});
+  } catch (err) {
+    console.error("Load error:", err);
+  }
+});
+</script>
+
+</body>
+</html>
