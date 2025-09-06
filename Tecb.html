@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cric Player</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.6.0/shaka-player.ui.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.6.0/controls.min.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons+Sharp">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body {
+      background: #000;
+      height: 100vh;
+      width: 100vw;
+      overflow: hidden;
+      font-family: system-ui, -apple-system, sans-serif;
+    }
+    .shaka-video-container {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+    }
+    video {
+      width: 100%;
+      height: 100%;
+      background: #000;
+      object-fit: contain;
+    }
+    .shaka-spinner-container,
+    .shaka-spinner,
+    .shaka-spinner-svg {
+      display: none !important;
+      visibility: hidden !important;
+      opacity: 0 !important;
+    }
+  </style>
+</head>
+<body>
+
+<div class="shaka-video-container youtube-theme" data-shaka-player>
+  <video autoplay muted playsinline preload="metadata"></video>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', async () => {
+  shaka.polyfill.installAll();
+  if (!shaka.Player.isBrowserSupported()) return;
+
+  // Channel list
+  const channels = {
+    "ss1s":  { mpd: "https://jiotvmblive.cdn.jio.com/bpk-tv/Star_Sports_1_BTS/output/index.mpd",            clearkey: "df20894ec30954d3b28097c138f4cfda:ff9b6292b1cddbd11a046029cb314634" },
+    "ss2":   { mpd: "https://jiotvmblive.cdn.jio.com/bpk-tv/Star_Sports_2_BTS/output/index.mpd",            clearkey: "fc3aafe80845584199a637249fad2ffa:ca4474972fdb4bf8ecb164482853c692" },
+    "ss1":   { mpd: "https://jiotvmblive.cdn.jio.com/bpk-tv/Star_Sports_HD1_BTS/output/index.mpd",          clearkey: "965dc2ddb1d85138ad787999a7f30ca5:859695076e67fe961836b564db6d689c" },
+    "ss1h":  { mpd: "https://jiotvmblive.cdn.jio.com/bpk-tv/Star_Sports_HD1_Hindi_BTS/output/index.mpd",    clearkey: "400131994b445d8c8817202248760fda:2d56cb6f07a75b9aff165d534ae2bfc4" },
+    "sss1s": { mpd: "https://jiotvmblive.cdn.jio.com/bpk-tv/Star_Sports_Select_1_BTS/output/index.mpd",    clearkey: "ea7985dacbb95f1c9d62e5a1675142e5:39d5910ca04841b5f32bf24623cdae58" },
+    "sss1":  { mpd: "https://jiotvmblive.cdn.jio.com/bpk-tv/Star_Sports_Select_1_HD_BTS/output/index.mpd", clearkey: "c2c048e439d65316beeda6ef64d5d0f8:e2fdc132cbdee65501b845ce414fce39" },
+    "sss2s": { mpd: "https://jiotvmblive.cdn.jio.com/bpk-tv/Star_Sports_Select_2_BTS/output/index.mpd",    clearkey: "ec7d009d07aa5cbc81a441880530dfa5:8147983ad7402ebfc222d28b667a196f" },
+    "sss2":  { mpd: "https://jiotvmblive.cdn.jio.com/bpk-tv/Star_Sports_Select_HD_2_BTS/output/index.mpd", clearkey: "6017d0514d425fa38f6e80ba6dcc852f:0018944b00adf2078f62386f30c68b74" },
+    "ss1t":  { mpd: "https://jiotvmblive.cdn.jio.com/bpk-tv/Star_Sports_1_Tamil_BTS/output/index.mpd",     clearkey: "d0d750ebd52b5756aa7fb833f61ceece:4ae62a20c030c918aad24193c1dda229" },
+    "t2":    { mpd: "https://jiotvmblive.cdn.jio.com/bpk-tv/Ten_2_MOB/WDVLive/index.mpd",                  clearkey: "671ce7c8ccc95e0a95cba0d12831d12e:175d284c9647b6feb379e7c1650a4f82" },
+    "ss2h":  { mpd: "https://jiotvmblive.cdn.jio.com/bpk-tv/Sports18_1_HD_BTS/output/index.mpd",           clearkey: "b9d4acedc66c5660a1e06197a55bccd2:dd53bab1a42f41ae8f0a5c8fd286f456" },
+    "ss2hs": { mpd: "https://jiotvmblive.cdn.jio.com/bpk-tv/Sports18_1_SD_BTS/output/index.mpd",           clearkey: "a3ed8dc0e0cb5d238da80ee0a85bd2e1:67a96992e6406606f3480ab58d7f540c" },
+    "ssk":   { mpd: "https://jiotvmblive.cdn.jio.com/bpk-tv/Sports18_Khel_BTS/output/index.mpd",           clearkey: "ab947ddbb9795d38bff35597b4f73108:2671e22eb7dc174c35b6aad4b113f7b0" }
+  };
+
+  // Get channel ID from query param
+  const params = new URLSearchParams(window.location.search);
+  const channelId = params.get("id");
+
+  const video = document.querySelector('video');
+  const player = new shaka.Player();
+  await player.attach(video);
+
+  const container = document.querySelector('.shaka-video-container');
+  const ui = new shaka.ui.Overlay(player, container, video);
+  ui.getControls();
+
+  // Base config
+  player.configure({
+    streaming: {
+      bufferingGoal: 30,
+      rebufferingGoal: 5,
+      bufferBehind: 30,
+      retryParameters: { timeout: 15000, maxAttempts: 3, baseDelay: 500, backoffFactor: 1.5 },
+      segmentRequestTimeout: 10000,
+      useNativeHlsOnSafari: true
+    },
+    manifest: {
+      retryParameters: { timeout: 10000, maxAttempts: 2 }
+    }
+  });
+
+  // Networking headers
+  player.getNetworkingEngine().registerRequestFilter((type, request) => {
+    request.headers['Referer'] = 'https://www.jiotv.com/';
+    request.headers['User-Agent'] = "plaYtv/7.1.3(Linux;Android13)ygx/69.1ExoPlayerLib/824.0";
+    request.headers['Cookie'] = "__hdnea__=st=1757123287~exp=1757209687~acl=/*~hmac=eef4bf7091e735865b03b501737fbedf2bc9770a2afb761c102358ee87023320";
+    if ((type === shaka.net.NetworkingEngine.RequestType.MANIFEST ||
+         type === shaka.net.NetworkingEngine.RequestType.SEGMENT) && 
+        request.uris[0].indexOf('__hdnea__=') === -1) {
+      const separator = request.uris[0].includes('?') ? '&' : '?';
+      request.uris[0] += separator + "__hdnea__=st=1757123287~exp=1757209687~acl=/*~hmac=eef4bf7091e735865b03b501737fbedf2bc9770a2afb761c102358ee87023320";
+    }
+  });
+
+  // Load selected channel if valid
+  if (channelId && channels[channelId]) {
+    const { mpd, clearkey } = channels[channelId];
+    const [kid, key] = clearkey.split(':');
+    player.configure({ drm: { clearKeys: { [kid]: key } } });
+
+    try {
+      await player.load(mpd);
+
+      const playVideo = async () => {
+        try {
+          await video.play();
+        } catch {
+          video.muted = false;
+          try { await video.play(); } catch {}
+        }
+      };
+
+      if (video.readyState >= 3) playVideo();
+      else video.addEventListener('canplay', playVideo, { once: true });
+
+    } catch {}
+  }
+});
+</script>
+
+</body>
+</html>
